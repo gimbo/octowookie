@@ -20,9 +20,36 @@ class Company(models.Model):
     def __unicode__(self):
         return self.name
 
+    def phones(self):
+        return [p.strip() for p in [self.phone1, self.phone2] if p.strip()]
+
+    def phones_str(self):
+        return ', '.join(self.phones())
+
+    def emails(self):
+        return [e.strip() for e in [self.email1, self.email2] if e.strip()]
+
+    def emails_str(self):
+        return ', '.join(self.emails())
+
+    def employees(self):
+        return self.person_set.all()
+
+    def offerings(self):
+        return self.opportunity_set.all()
+
 
 class CompanyAdmin(admin.ModelAdmin):
-    list_display = ('name', 'phone1', 'email1')
+
+    fieldsets = [
+        (None,     {'fields': ['name']}),
+        ('Phones', {'fields': [('phone1', 'phone2')]}),
+        ('Emails', {'fields': [('email1', 'email2')]}),
+        ('URLs',   {'fields': [('url1', 'url2')]}),
+        (None,     {'fields': ['notes']}),
+        ]
+
+    list_display = ('name', 'phones_str', 'emails_str', 'employees', 'offerings')
 
 
 class Person(models.Model):
@@ -54,9 +81,32 @@ class Person(models.Model):
     def employers_string(self):
         return ', '.join([str(employer) for employer in self.employers()])
 
+    def phones(self):
+        return [p.strip() for p in [self.phone1, self.phone2] if p.strip()]
+
+    def phones_str(self):
+        return ', '.join(self.phones())
+
+    def emails(self):
+        return [e.strip() for e in [self.email1, self.email2] if e.strip()]
+
+    def emails_str(self):
+        return ', '.join(self.emails())
+
 
 class PersonAdmin(admin.ModelAdmin):
-    list_display = ('name', 'employers_string', 'phone1', 'email1')
+
+    fieldsets = [
+        (None,     {'fields': [('forename', 'surname'),
+                               'worksat',
+                               ]}),
+        ('Phones', {'fields': [('phone1', 'phone2')]}),
+        ('Emails', {'fields': [('email1', 'email2')]}),
+        ('URLs',   {'fields': [('url1', 'url2')]}),
+        (None,     {'fields': ['notes']}),
+        ]
+
+    list_display = ('name', 'employers_string', 'phones_str', 'emails_str')
 
 
 class Opportunity(models.Model):
@@ -93,6 +143,17 @@ class Opportunity(models.Model):
 
 
 class OpportunityAdmin(admin.ModelAdmin):
+
+    fieldsets = [
+        (None,     {'fields': [('title', 'url'),
+                               ('offered_by', 'managed_by'),
+                               'location',
+                               'when',
+                               'status',
+                               'notes'
+                               ]}),
+        ]
+
     list_display = ('title', 'url')
 
 
