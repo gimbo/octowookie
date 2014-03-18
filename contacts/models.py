@@ -5,6 +5,8 @@ from django.contrib.contenttypes import generic
 # Create your models here.
 
 class Company(models.Model):
+    class Meta:
+        verbose_name_plural = "Companies"
     def __unicode__(self):
         return self.name
     name = models.CharField(max_length=200)
@@ -17,6 +19,8 @@ class Company(models.Model):
     notes = models.CharField(max_length=10000, blank=True, null=True)
 
 class Person(models.Model):
+    class Meta:
+        verbose_name_plural = "People"
     def __unicode__(self):
         return self.name
     def __str__(self):
@@ -32,6 +36,8 @@ class Person(models.Model):
     notes = models.CharField(max_length=10000, blank=True, null=True)
 
 class Opportunity(models.Model):
+    class Meta:
+        verbose_name_plural = "Opportunities"
     def __unicode__(self):
         return self.title
     offered_by = models.ManyToManyField(Company, blank=True, null=True)
