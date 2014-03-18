@@ -44,7 +44,8 @@ class Opportunity(models.Model):
 
 class Conversation(models.Model):
     def __unicode__(self):
-        return unicode(self.when)
+        people = ' and '.join([str(person) for person in self.involves.all()])
+        return "{0} at {1:%H:%M on %A %d %B %Y}".format(people, self.when)
     involves = models.ManyToManyField(Person)
     regards = models.ForeignKey(Opportunity, blank=True, null=True)
     when = models.DateTimeField()
