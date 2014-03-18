@@ -6,6 +6,7 @@ from django.contrib.contenttypes import generic
 
 class Company(models.Model):
     class Meta:
+        ordering = ['name']
         verbose_name_plural = "Companies"
     def __unicode__(self):
         return self.name
@@ -20,6 +21,7 @@ class Company(models.Model):
 
 class Person(models.Model):
     class Meta:
+        ordering = ['name']
         verbose_name_plural = "People"
     def __unicode__(self):
         return self.name
@@ -37,6 +39,7 @@ class Person(models.Model):
 
 class Opportunity(models.Model):
     class Meta:
+        ordering = ['when', 'title']
         verbose_name_plural = "Opportunities"
     def __unicode__(self):
         return self.title
@@ -49,6 +52,8 @@ class Opportunity(models.Model):
     notes = models.CharField(max_length=10000, blank=True, null=True)
 
 class Conversation(models.Model):
+    class Meta:
+        ordering = ['when', 'regards']
     def __unicode__(self):
         people = ' and '.join([str(person) for person in self.involves.all()])
         return "{0} at {1:%H:%M on %A %d %B %Y}".format(people, self.when)
