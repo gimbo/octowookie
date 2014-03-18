@@ -23,14 +23,9 @@ class Company(models.Model):
     def phones(self):
         return [p.strip() for p in [self.phone1, self.phone2] if p.strip()]
 
-    def phones_str(self):
-        return ', '.join(self.phones())
-
     def emails(self):
         return [e.strip() for e in [self.email1, self.email2] if e.strip()]
 
-    def emails_str(self):
-        return ', '.join(self.emails())
 
     def employees(self):
         return self.person_set.all()
@@ -41,6 +36,22 @@ class Company(models.Model):
 
 class CompanyAdmin(admin.ModelAdmin):
 
+    def phones_str(self, obj):
+        return ', '.join(obj.phones())
+    phones_str.short_description = 'phone numbers'
+
+    def emails_str(self, obj):
+        return ', '.join(obj.emails())
+    emails_str.short_description = 'email addresses'
+
+    def employees_str(self, obj):
+        return ' and '.join([str(p) for p in obj.employees()])
+    employees_str.short_description = 'employees'
+
+    def offerings_str(self, obj):
+        return ' and '.join([str(p) for o in obj.offerings()])
+    offerings_str.short_description = 'offerings'
+
     fieldsets = [
         (None,     {'fields': ['name']}),
         ('Phones', {'fields': [('phone1', 'phone2')]}),
@@ -49,8 +60,8 @@ class CompanyAdmin(admin.ModelAdmin):
         (None,     {'fields': ['notes']}),
         ]
 
-    list_display = ('name', 'phones_str', 'emails_str', 'employees',
-                    'offerings')
+    list_display = ('name', 'phones_str', 'emails_str', 'employees_str',
+                    'offerings_str')
 
 
 class Person(models.Model):
@@ -79,23 +90,27 @@ class Person(models.Model):
     def employers(self):
         return self.worksat.all()
 
-    def employers_string(self):
-        return ', '.join([str(employer) for employer in self.employers()])
-
     def phones(self):
         return [p.strip() for p in [self.phone1, self.phone2] if p.strip()]
-
-    def phones_str(self):
-        return ', '.join(self.phones())
 
     def emails(self):
         return [e.strip() for e in [self.email1, self.email2] if e.strip()]
 
-    def emails_str(self):
-        return ', '.join(self.emails())
 
 
 class PersonAdmin(admin.ModelAdmin):
+
+    def employers_str(self, obj):
+        return ', '.join([str(employer) for employer in obj.employers()])
+    employers_str.short_description = 'employers'
+
+    def phones_str(self, obj):
+        return ', '.join(obj.phones())
+    phones_str.short_description = 'phone numbers'
+
+    def emails_str(self, obj):
+        return ', '.join(obj.emails())
+    emails_str.short_description = 'email addresses'
 
     fieldsets = [
         (None,     {'fields': [('forename', 'surname'),
@@ -107,7 +122,7 @@ class PersonAdmin(admin.ModelAdmin):
         (None,     {'fields': ['notes']}),
         ]
 
-    list_display = ('name', 'employers_string', 'phones_str', 'emails_str')
+    list_display = ('name', 'employers_str', 'phones_str', 'emails_str')
 
 
 class Opportunity(models.Model):
@@ -144,11 +159,12 @@ class Opportunity(models.Model):
             location = 'unknown location'
         return "{0} (at {1})".format(self.title, location)
 
-    def managed_by_str(self):
-        return ' and '.join([str(person) for person in self.managed_by.all()])
-
 
 class OpportunityAdmin(admin.ModelAdmin):
+
+    def managed_by_str(self, obj):
+        return ' and '.join([str(person) for person in obj.managed_by.all()])
+    managed_by_str.short_description = 'managed by'
 
     fieldsets = [
         (None,     {'fields': [('title', 'url'),
@@ -177,15 +193,28 @@ class Conversation(models.Model):
         people = ' and '.join([str(person) for person in self.involves.all()])
         return "{0} at {1:%H:%M on %A %d %B %Y}".format(people, self.when)
 
-    def involves_str(self):
-        return ' and '.join([str(person) for person in self.involves.all()])
-
-    def regards_str(self):
-        return ' and '.join([str(person) for person in self.regards.all()])
-
-    def when_str(self):
-        return '{0:%a %d %b %Y at %H:%M}'.format(self.when)
-
 
 class ConversationAdmin(admin.ModelAdmin):
+
+    def when_str(self, obj):
+        return '{0:%a %d %b %Y at %H:%M}'.format(obj.when)
+    when_str.short_description = 'when'
+
+    def involves_str(self, obj):
+        return ' and '.join([str(person) for person in obj.involves.all()])
+    involves_str.short_description = 'involves'
+
+    def regards_str(self, obj):
+        return ' and '.join([str(person) for person in obj.regards.all()])
+    regards_str.short_description = 'regards'
+
     list_display = ('when_str', 'involves_str', 'regards_str')
+
+    fieldsets = [
+        (None, {'fields': ['when',
+                           'involves',
+                           'regards',
+                           'notes'
+                       ]})
+        ]
+
