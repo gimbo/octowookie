@@ -21,14 +21,15 @@ class Company(models.Model):
 
 class Person(models.Model):
     class Meta:
-        ordering = ['name']
+        ordering = ['surname', 'forename']
         verbose_name_plural = "People"
     def __unicode__(self):
-        return self.name
-    def __str__(self):
-        return self.name
+        return self.name()
+    def name(self):
+        return '{0} {1}'.format(self.forename, self.surname)
     worksat = models.ManyToManyField(Company)
-    name = models.CharField(max_length=200)
+    forename = models.CharField(max_length=200)
+    surname = models.CharField(max_length=200)
     phone1 = models.CharField(max_length=100, blank=True, null=True)
     phone2 = models.CharField(max_length=100, blank=True, null=True)
     email1 = models.EmailField(max_length=1000, blank=True, null=True)
