@@ -46,5 +46,6 @@ class Conversation(models.Model):
     def __unicode__(self):
         return unicode(self.when)
     involves = models.ManyToManyField(Person)
+    regards = models.ForeignKey(Opportunity, blank=True, null=True)
     when = models.DateTimeField()
     notes = models.CharField(max_length=10000, blank=True, null=True)
