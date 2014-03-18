@@ -39,8 +39,18 @@ class Person(models.Model):
     notes = models.CharField(max_length=10000, blank=True, null=True)
 
 class Opportunity(models.Model):
+    PENDING = 'PENDING'
+    WONTAPPLY = 'WONTAPPLY'
+    APPLIED = 'APPLIED'
+    REJECTED = 'REJECTED'
+    STATUS_CHOICES = (
+        (PENDING, 'Pending'),
+        (APPLIED, 'Applied'),
+        (REJECTED, 'Rejected'),
+        (WONTAPPLY, "Won't Apply"),
+        )
     class Meta:
-        ordering = ['when', 'title']
+        ordering = ['status', 'when', 'title']
         verbose_name_plural = "Opportunities"
     def __unicode__(self):
         return self.title
@@ -50,6 +60,9 @@ class Opportunity(models.Model):
     url = models.URLField(max_length=2000, blank=True, null=True)
     location = models.CharField(max_length=200, blank=True, null=True)
     when = models.DateTimeField()
+    status = models.CharField(max_length=20,
+                              choices=STATUS_CHOICES,
+                              default=PENDING)
     notes = models.CharField(max_length=10000, blank=True, null=True)
 
 class Conversation(models.Model):
