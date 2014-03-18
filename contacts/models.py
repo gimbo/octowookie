@@ -1,15 +1,16 @@
 from django.db import models
-from django.contrib.contenttypes.models import ContentType
-from django.contrib.contenttypes import generic
+from django.contrib import admin
 
-# Create your models here.
 
 class Company(models.Model):
+
     class Meta:
         ordering = ['name']
         verbose_name_plural = "Companies"
+
     def __unicode__(self):
         return self.name
+
     name = models.CharField(max_length=200)
     phone1 = models.CharField(max_length=100, blank=True, null=True)
     phone2 = models.CharField(max_length=100, blank=True, null=True)
@@ -19,14 +20,29 @@ class Company(models.Model):
     url2 = models.URLField(max_length=2000, blank=True, null=True)
     notes = models.CharField(max_length=10000, blank=True, null=True)
 
+
+class CompanyAdmin(admin.ModelAdmin):
+    list_display = ('name', 'phone1', 'email1')
+
+
 class Person(models.Model):
+
     class Meta:
-        ordering = ['surname', 'forename']
+        ordering = ('surname', 'forename')
         verbose_name_plural = "People"
+
     def __unicode__(self):
         return self.name()
+
     def name(self):
         return '{0} {1}'.format(self.forename, self.surname)
+
+    def employers(self):
+        return self.worksat.all()
+
+    def employers_string(self):
+        return ', '.join([str(employer) for employer in self.employers()])
+
     worksat = models.ManyToManyField(Company)
     forename = models.CharField(max_length=200)
     surname = models.CharField(max_length=200)
@@ -38,7 +54,13 @@ class Person(models.Model):
     url2 = models.URLField(max_length=2000, blank=True, null=True)
     notes = models.CharField(max_length=10000, blank=True, null=True)
 
+
+class PersonAdmin(admin.ModelAdmin):
+    list_display = ('name', 'employers_string', 'phone1', 'email1')
+
+
 class Opportunity(models.Model):
+
     PENDING = 'PENDING'
     WONTAPPLY = 'WONTAPPLY'
     APPLIED = 'APPLIED'
@@ -49,11 +71,15 @@ class Opportunity(models.Model):
         (REJECTED, 'Rejected'),
         (WONTAPPLY, "Won't Apply"),
         )
+
     class Meta:
         ordering = ['status', 'when', 'title']
         verbose_name_plural = "Opportunities"
+
     def __unicode__(self):
-        return self.title
+        return "{1:%Y-%m-%d} {0} {2} ({3})".format(self.status, self.when,
+                                                   self.title, self.location)
+
     offered_by = models.ManyToManyField(Company, blank=True, null=True)
     managed_by = models.ManyToManyField(Person, blank=True, null=True)
     title = models.CharField(max_length=200)
@@ -65,13 +91,25 @@ class Opportunity(models.Model):
                               default=PENDING)
     notes = models.CharField(max_length=10000, blank=True, null=True)
 
+
+class OpportunityAdmin(admin.ModelAdmin):
+    list_display = ('title', 'url')
+
+
 class Conversation(models.Model):
+
     class Meta:
-        ordering = ['when', 'regards']
+        ordering = ['when']
+
     def __unicode__(self):
         people = ' and '.join([str(person) for person in self.involves.all()])
         return "{0} at {1:%H:%M on %A %d %B %Y}".format(people, self.when)
+
     involves = models.ManyToManyField(Person)
-    regards = models.ForeignKey(Opportunity, blank=True, null=True)
+    regards = models.ManyToManyField(Opportunity, blank=True, null=True)
     when = models.DateTimeField()
     notes = models.CharField(max_length=10000, blank=True, null=True)
+
+
+class ConversationAdmin(admin.ModelAdmin):
+    list_display = ('when', )
