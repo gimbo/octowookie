@@ -128,7 +128,7 @@ class Opportunity(models.Model):
     title = models.CharField(max_length=200)
     url = models.URLField(max_length=2000, blank=True, null=True)
     location = models.CharField(max_length=200, blank=True, null=True)
-    when = models.DateTimeField()
+    when = models.DateField()
     status = models.CharField(max_length=20,
                               choices=STATUS_CHOICES,
                               default=PENDING)
