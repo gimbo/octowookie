@@ -49,7 +49,8 @@ class CompanyAdmin(admin.ModelAdmin):
         (None,     {'fields': ['notes']}),
         ]
 
-    list_display = ('name', 'phones_str', 'emails_str', 'employees', 'offerings')
+    list_display = ('name', 'phones_str', 'emails_str', 'employees',
+                    'offerings')
 
 
 class Person(models.Model):
@@ -138,8 +139,13 @@ class Opportunity(models.Model):
         verbose_name_plural = "Opportunities"
 
     def __unicode__(self):
-        return "{1:%Y-%m-%d} {0} {2} ({3})".format(self.status, self.when,
-                                                   self.title, self.location)
+        location = self.location.strip()
+        if not location:
+            location = 'unknown location'
+        return "{0} (at {1})".format(self.title, location)
+
+    def managed_by_str(self):
+        return ' and '.join([str(person) for person in self.managed_by.all()])
 
 
 class OpportunityAdmin(admin.ModelAdmin):
@@ -154,7 +160,7 @@ class OpportunityAdmin(admin.ModelAdmin):
                                ]}),
         ]
 
-    list_display = ('title', 'url')
+    list_display = ('status', 'when', 'title', 'location', 'managed_by_str')
 
 
 class Conversation(models.Model):
@@ -171,6 +177,15 @@ class Conversation(models.Model):
         people = ' and '.join([str(person) for person in self.involves.all()])
         return "{0} at {1:%H:%M on %A %d %B %Y}".format(people, self.when)
 
+    def involves_str(self):
+        return ' and '.join([str(person) for person in self.involves.all()])
+
+    def regards_str(self):
+        return ' and '.join([str(person) for person in self.regards.all()])
+
+    def when_str(self):
+        return '{0:%a %d %b %Y at %H:%M}'.format(self.when)
+
 
 class ConversationAdmin(admin.ModelAdmin):
-    list_display = ('when', )
+    list_display = ('when_str', 'involves_str', 'regards_str')
