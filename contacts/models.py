@@ -26,7 +26,6 @@ class Company(models.Model):
     def emails(self):
         return [e.strip() for e in [self.email1, self.email2] if e.strip()]
 
-
     def employees(self):
         return self.person_set.all()
 
@@ -49,7 +48,7 @@ class CompanyAdmin(admin.ModelAdmin):
     employees_str.short_description = 'employees'
 
     def offerings_str(self, obj):
-        return ' and '.join([str(p) for o in obj.offerings()])
+        return ' and '.join([str(o) for o in obj.offerings()])
     offerings_str.short_description = 'offerings'
 
     fieldsets = [
@@ -95,7 +94,6 @@ class Person(models.Model):
 
     def emails(self):
         return [e.strip() for e in [self.email1, self.email2] if e.strip()]
-
 
 
 class PersonAdmin(admin.ModelAdmin):
@@ -213,9 +211,4 @@ class ConversationAdmin(admin.ModelAdmin):
     list_display = ('when_str', 'involves_str', 'regards_str')
 
     fieldsets = [
-        (None, {'fields': ['when',
-                           'involves',
-                           'regards',
-                           'notes'
-                       ]})
-        ]
+        (None, {'fields': ['when', 'involves', 'regards', 'notes']})]
