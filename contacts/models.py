@@ -11,7 +11,7 @@ class Company(models.Model):
     email2 = models.EmailField(max_length=1000, blank=True, null=True)
     url1 = models.URLField(max_length=2000, blank=True, null=True)
     url2 = models.URLField(max_length=2000, blank=True, null=True)
-    notes = models.CharField(max_length=10000, blank=True, null=True)
+    notes = models.TextField(blank=True, null=True)
 
     class Meta:
         ordering = ['name']
@@ -75,7 +75,7 @@ class Person(models.Model):
     email2 = models.EmailField(max_length=1000, blank=True, null=True)
     url1 = models.URLField(max_length=2000, blank=True, null=True)
     url2 = models.URLField(max_length=2000, blank=True, null=True)
-    notes = models.CharField(max_length=10000, blank=True, null=True)
+    notes = models.TextField(blank=True, null=True)
 
     class Meta:
         ordering = ('surname', 'forename')
@@ -147,7 +147,7 @@ class Opportunity(models.Model):
     status = models.CharField(max_length=20,
                               choices=STATUS_CHOICES,
                               default=PENDING)
-    notes = models.CharField(max_length=10000, blank=True, null=True)
+    notes = models.TextField(blank=True, null=True)
 
     class Meta:
         ordering = ['status', 'when', 'title']
@@ -184,7 +184,7 @@ class Conversation(models.Model):
     involves = models.ManyToManyField(Person)
     regards = models.ManyToManyField(Opportunity, blank=True, null=True)
     when = models.DateTimeField()
-    notes = models.CharField(max_length=10000, blank=True, null=True)
+    notes = models.TextField(blank=True, null=True)
 
     class Meta:
         ordering = ['when']
@@ -217,4 +217,3 @@ class ConversationAdmin(admin.ModelAdmin):
                            'notes'
                        ]})
         ]
-
