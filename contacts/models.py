@@ -206,6 +206,7 @@ class Conversation(models.Model):
     involves = models.ManyToManyField(Person)
     regards = models.ManyToManyField(Opportunity, blank=True, null=True)
     when = models.DateTimeField()
+    medium = models.CharField(max_length=100, blank=True, null=True)
     notes = models.TextField(blank=True, null=True)
 
     class Meta:
@@ -213,7 +214,9 @@ class Conversation(models.Model):
 
     def __unicode__(self):
         people = ' and '.join([str(person) for person in self.involves.all()])
-        return "{0} at {1:%H:%M on %A %d %B %Y}".format(people, self.when)
+        return "{0}, {1} at {2:%H:%M on %A %d %B %Y}".format(people,
+                                                             self.medium,
+                                                             self.when)
 
 
 class ConversationAdmin(admin.ModelAdmin):
@@ -230,7 +233,8 @@ class ConversationAdmin(admin.ModelAdmin):
         return ' and '.join([str(person) for person in obj.regards.all()])
     regards_str.short_description = 'regards'
 
-    list_display = ('when_str', 'involves_str', 'regards_str')
+    list_display = ('when_str', 'medium', 'involves_str', 'regards_str')
 
     fieldsets = [
-        (None, {'fields': ['when', 'involves', 'regards', 'notes']})]
+        (None, {'fields': [('when', 'medium'),
+                           'involves', 'regards', 'notes']})]
