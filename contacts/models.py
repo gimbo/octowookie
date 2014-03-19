@@ -26,6 +26,9 @@ class Company(models.Model):
     def emails(self):
         return [e.strip() for e in [self.email1, self.email2] if e.strip()]
 
+    def urls(self):
+        return [u.strip() for u in [self.url1, self.url2] if u.strip()]
+
     def employees(self):
         return self.person_set.all()
 
@@ -43,6 +46,10 @@ class CompanyAdmin(admin.ModelAdmin):
         return ', '.join(obj.emails())
     emails_str.short_description = 'email addresses'
 
+    def urls_str(self, obj):
+        return ', '.join(obj.urls())
+    urls_str.short_description = 'URLs'
+
     def employees_str(self, obj):
         return ' and '.join([str(p) for p in obj.employees()])
     employees_str.short_description = 'employees'
@@ -59,8 +66,8 @@ class CompanyAdmin(admin.ModelAdmin):
         (None,     {'fields': ['notes']}),
         ]
 
-    list_display = ('name', 'phones_str', 'emails_str', 'employees_str',
-                    'offerings_str')
+    list_display = ('name', 'phones_str', 'emails_str', 'urls_str',
+                    'employees_str', 'offerings_str')
 
 
 class Person(models.Model):
