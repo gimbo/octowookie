@@ -130,10 +130,12 @@ class Opportunity(models.Model):
     WONTAPPLY = 'WONTAPPLY'
     APPLIED = 'APPLIED'
     REJECTED = 'REJECTED'
+    ACCEPTED = 'ACCEPTED'
     STATUS_CHOICES = (
         (PENDING, 'Pending'),
         (IN_PROGRESS, 'In Progress'),
         (APPLIED, 'Applied'),
+        (ACCEPTED, 'Accepted'),
         (REJECTED, 'Rejected'),
         (WONTAPPLY, "Won't Apply"),
         )
