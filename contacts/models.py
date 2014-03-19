@@ -75,6 +75,7 @@ class Person(models.Model):
     worksat = models.ManyToManyField(Company)
     forename = models.CharField(max_length=200)
     surname = models.CharField(max_length=200)
+    location = models.CharField(max_length=200, blank=True, null=True)
     phone1 = models.CharField(max_length=100, blank=True, null=True)
     phone2 = models.CharField(max_length=100, blank=True, null=True)
     email1 = models.EmailField(max_length=1000, blank=True, null=True)
@@ -130,7 +131,7 @@ class PersonAdmin(admin.ModelAdmin):
 
     fieldsets = [
         (None,     {'fields': [('forename', 'surname'),
-                               'worksat',
+                               ('worksat', 'location'),
                                ]}),
         ('Phones', {'fields': [('phone1', 'phone2')]}),
         ('Emails', {'fields': [('email1', 'email2')]}),
@@ -138,8 +139,8 @@ class PersonAdmin(admin.ModelAdmin):
         (None,     {'fields': ['notes']}),
         ]
 
-    list_display = ('name', 'employers_str', 'phones_str', 'emails_str',
-                    'live_opportunities_str')
+    list_display = ('name', 'employers_str', 'location', 'phones_str',
+                    'emails_str', 'live_opportunities_str')
 
 
 class Opportunity(models.Model):
