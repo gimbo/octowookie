@@ -199,6 +199,7 @@ class OpportunityAdmin(admin.ModelAdmin):
         ]
 
     list_display = ('status', 'when', 'title', 'location', 'managed_by_str')
+    list_display_links = ('title',)
 
 
 class Conversation(models.Model):
