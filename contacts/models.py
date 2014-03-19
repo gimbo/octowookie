@@ -203,14 +203,28 @@ class OpportunityAdmin(admin.ModelAdmin):
 
 class Conversation(models.Model):
 
+    OPEN = '10 OPEN'
+    WAITING = '20 WAITING'
+    ACTION_NEEDED = '30 ACTION NEEDED'
+    CLOSED = '50 CLOSED'
+    STATUS_CHOICES = (
+        (OPEN, 'Open'),
+        (WAITING, 'Waiting'),
+        (ACTION_NEEDED, 'Action Needed'),
+        (CLOSED, 'Closed'),
+        )
+
     involves = models.ManyToManyField(Person)
     regards = models.ManyToManyField(Opportunity, blank=True, null=True)
     when = models.DateTimeField()
     medium = models.CharField(max_length=100, blank=True, null=True)
+    status = models.CharField(max_length=20,
+                              choices=STATUS_CHOICES,
+                              default=OPEN)
     notes = models.TextField(blank=True, null=True)
 
     class Meta:
-        ordering = ['when']
+        ordering = ['status', 'when']
 
     def __unicode__(self):
         people = ' and '.join([str(person) for person in self.involves.all()])
@@ -233,8 +247,9 @@ class ConversationAdmin(admin.ModelAdmin):
         return ' and '.join([str(person) for person in obj.regards.all()])
     regards_str.short_description = 'regards'
 
-    list_display = ('when_str', 'medium', 'involves_str', 'regards_str')
+    list_display = ('when_str', 'status', 'medium', 'involves_str',
+                    'regards_str')
 
     fieldsets = [
-        (None, {'fields': [('when', 'medium'),
+        (None, {'fields': [('when', 'medium', 'status'),
                            'involves', 'regards', 'notes']})]
