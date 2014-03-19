@@ -128,11 +128,13 @@ class PersonAdmin(admin.ModelAdmin):
 class Opportunity(models.Model):
 
     PENDING = 'PENDING'
+    IN_PROGRESS = 'IN PROGRESS'
     WONTAPPLY = 'WONTAPPLY'
     APPLIED = 'APPLIED'
     REJECTED = 'REJECTED'
     STATUS_CHOICES = (
         (PENDING, 'Pending'),
+        (IN_PROGRESS, 'In Progress'),
         (APPLIED, 'Applied'),
         (REJECTED, 'Rejected'),
         (WONTAPPLY, "Won't Apply"),
