@@ -95,6 +95,13 @@ class Person(models.Model):
     def emails(self):
         return [e.strip() for e in [self.email1, self.email2] if e.strip()]
 
+    def opportunities(self):
+        return self.opportunity_set.all()
+
+    def live_opportunities(self):
+        return [o for o in self.opportunities()
+                if o.status not in (Opportunity.WONTAPPLY, Opportunity.REJECTED)]
+
 
 class PersonAdmin(admin.ModelAdmin):
 
@@ -110,6 +117,10 @@ class PersonAdmin(admin.ModelAdmin):
         return ', '.join(obj.emails())
     emails_str.short_description = 'email addresses'
 
+    def live_opportunities_str(self, obj):
+        return '; '.join([str(o) for o in obj.live_opportunities()])
+    live_opportunities_str.short_description = 'live opportunities'
+
     fieldsets = [
         (None,     {'fields': [('forename', 'surname'),
                                'worksat',
@@ -120,7 +131,8 @@ class PersonAdmin(admin.ModelAdmin):
         (None,     {'fields': ['notes']}),
         ]
 
-    list_display = ('name', 'employers_str', 'phones_str', 'emails_str')
+    list_display = ('name', 'employers_str', 'phones_str', 'emails_str',
+                    'live_opportunities_str')
 
 
 class Opportunity(models.Model):
@@ -159,7 +171,7 @@ class Opportunity(models.Model):
         location = self.location.strip()
         if not location:
             location = 'unknown location'
-        return "{0} (at {1})".format(self.title, location)
+        return "{0} @ {1}".format(self.title, location)
 
 
 class OpportunityAdmin(admin.ModelAdmin):
