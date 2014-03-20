@@ -72,9 +72,9 @@ class CompanyAdmin(admin.ModelAdmin):
 
 class Person(models.Model):
 
-    worksat = models.ManyToManyField(Company)
     forename = models.CharField(max_length=200)
     surname = models.CharField(max_length=200)
+    worksat = models.ManyToManyField(Company, blank=True, null=True)
     location = models.CharField(max_length=200, blank=True, null=True)
     phone1 = models.CharField(max_length=100, blank=True, null=True)
     phone2 = models.CharField(max_length=100, blank=True, null=True)
