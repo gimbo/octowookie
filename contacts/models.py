@@ -192,6 +192,10 @@ class Opportunity(models.Model):
 
 class OpportunityAdmin(admin.ModelAdmin):
 
+    def offered_by_str(self, obj):
+        return ' and '.join([str(person) for person in obj.offered_by.all()])
+    offered_by_str.short_description = 'offered by'
+
     def managed_by_str(self, obj):
         return ' and '.join([str(person) for person in obj.managed_by.all()])
     managed_by_str.short_description = 'managed by'
@@ -206,7 +210,8 @@ class OpportunityAdmin(admin.ModelAdmin):
                                ]}),
         ]
 
-    list_display = ('status', 'when', 'title', 'location', 'managed_by_str')
+    list_display = ('status', 'when', 'title', 'location', 'offered_by_str',
+                    'managed_by_str')
     list_display_links = ('title',)
 
 
