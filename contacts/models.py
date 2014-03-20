@@ -145,16 +145,24 @@ class PersonAdmin(admin.ModelAdmin):
 
 class Opportunity(models.Model):
 
+    NEW = '00 NEW'
     PENDING = '10 PENDING'
     IN_PROGRESS = '20 IN PROGRESS'
-    WONTAPPLY = '30 WONTAPPLY'
-    APPLIED = '40 APPLIED'
-    REJECTED = '50 REJECTED'
+    IN_PROGRESS_AWAITING_CALLBACK = '22 INP WAIT CALLBACK'
+    IN_PROGRESS_NEED_TO_CHASE = '22 INP CHASE'
+    APPLIED_RECRUITER = '50 APPLIED RECRUITER'
+    APPLIED_EMPLOYER = '55 APPLIED EMPLOYER'
     ACCEPTED = '60 ACCEPTED'
+    REJECTED = '80 REJECTED'
+    WONTAPPLY = '90 WONTAPPLY'
     STATUS_CHOICES = (
+        (NEW, 'New'),
         (PENDING, 'Pending'),
         (IN_PROGRESS, 'In Progress'),
-        (APPLIED, 'Applied'),
+        (IN_PROGRESS_AWAITING_CALLBACK, 'In Progress, awaiting callback'),
+        (IN_PROGRESS_NEED_TO_CHASE, 'In Progress, need to chase'),
+        (APPLIED_RECRUITER, 'Applied, waiting on recruiter'),
+        (APPLIED_EMPLOYER, 'Applied, waiting on employer'),
         (ACCEPTED, 'Accepted'),
         (REJECTED, 'Rejected'),
         (WONTAPPLY, "Won't Apply"),
@@ -168,7 +176,7 @@ class Opportunity(models.Model):
     when = models.DateField()
     status = models.CharField(max_length=20,
                               choices=STATUS_CHOICES,
-                              default=PENDING)
+                              default=NEW)
     notes = models.TextField(blank=True, null=True)
 
     class Meta:
