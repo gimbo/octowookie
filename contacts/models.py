@@ -190,6 +190,49 @@ class Opportunity(models.Model):
         return "{0} @ {1}".format(self.title, location)
 
 
+class OpportunityFilterStatus(admin.SimpleListFilter):
+
+    title = 'status'
+    parameter_name = 'status'
+
+    def lookups(self, request, model_admin):
+        return (
+            ('new', 'New'),
+            (None, 'Ongoing'),
+            ('closed', 'Closed'),
+            ('all', 'All')
+        )
+
+    def choices(self, cl):
+        for lookup, title in self.lookup_choices:
+            yield {
+                'selected': self.value() == lookup,
+                'query_string': cl.get_query_string({
+                    self.parameter_name: lookup,
+                }, []),
+                'display': title,
+            }
+
+    def queryset(self, request, queryset):
+        if self.value() == None:
+            # Only show ongoing opportunities by default.
+            return queryset.exclude(status__in=[Opportunity.NEW,
+                                                Opportunity.ACCEPTED,
+                                                Opportunity.REJECTED,
+                                                Opportunity.WONTAPPLY])
+        elif self.value() == 'new':
+            # Show only new opportunities if requested.
+            return queryset.filter(status__in=[Opportunity.NEW])
+        elif self.value() == 'closed':
+            # Show only closed opportunities if requested.
+            return queryset.filter(status__in=[Opportunity.ACCEPTED,
+                                                Opportunity.REJECTED,
+                                                Opportunity.WONTAPPLY])
+        else:
+            # Fallthrough: include whole set.
+            return queryset
+
+
 class OpportunityAdmin(admin.ModelAdmin):
 
     def offered_by_str(self, obj):
@@ -213,6 +256,7 @@ class OpportunityAdmin(admin.ModelAdmin):
     list_display = ('status', 'when', 'title', 'location', 'offered_by_str',
                     'managed_by_str')
     list_display_links = ('title',)
+    list_filter = (OpportunityFilterStatus,)
 
 
 class Conversation(models.Model):
