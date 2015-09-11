@@ -168,6 +168,15 @@ class Opportunity(models.Model):
         (WONTAPPLY, "Won't Apply"),
         )
 
+    STATUS_CLOSED = (
+        ACCEPTED,
+        REJECTED,
+        WONTAPPLY,
+        )
+    STATUS_NOT_ONGOING = (NEW, ) + STATUS_CLOSED
+    STATUS_ONGOING = tuple(
+        [x for (x, y) in STATUS_CHOICES if x not in STATUS_NOT_ONGOING])
+
     offered_by = models.ManyToManyField(Company, blank=True, null=True)
     managed_by = models.ManyToManyField(Person, blank=True, null=True)
     title = models.CharField(max_length=200)
@@ -188,6 +197,22 @@ class Opportunity(models.Model):
         if not location:
             location = 'unknown location'
         return "{0} @ {1}".format(self.title, location)
+
+    @property
+    def is_new(self):
+        return self.status == Opportunity.NEW
+
+    @property
+    def is_ongoing(self):
+        return self.status in Opportunity.STATUS_ONGOING
+
+    @property
+    def is_closed(self):
+        return self.status in Opportunity.STATUS_CLOSED
+
+    def wontapply(self):
+        self.status = Opportunity.WONTAPPLY
+        self.save()
 
 
 class OpportunityFilterStatus(admin.SimpleListFilter):
@@ -216,18 +241,13 @@ class OpportunityFilterStatus(admin.SimpleListFilter):
     def queryset(self, request, queryset):
         if self.value() == None:
             # Only show ongoing opportunities by default.
-            return queryset.exclude(status__in=[Opportunity.NEW,
-                                                Opportunity.ACCEPTED,
-                                                Opportunity.REJECTED,
-                                                Opportunity.WONTAPPLY])
+            return queryset.filter(status__in=Opportunity.STATUS_ONGOING)
         elif self.value() == 'new':
             # Show only new opportunities if requested.
             return queryset.filter(status__in=[Opportunity.NEW])
         elif self.value() == 'closed':
             # Show only closed opportunities if requested.
-            return queryset.filter(status__in=[Opportunity.ACCEPTED,
-                                                Opportunity.REJECTED,
-                                                Opportunity.WONTAPPLY])
+            return queryset.filter(status__in=Opportunity.STATUS_CLOSED)
         else:
             # Fallthrough: include whole set.
             return queryset
